@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="theme-color" content="#1266e8">
+  <title>Multi Clone</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <button class="icon-btn top-back hidden" id="backBtn" aria-label="Back">‹</button>
+      <div class="brand-mark">▣</div>
+      <div class="brand-copy">
+        <strong id="topTitle">Multi Clone</strong>
+        <small id="topSubtitle">Multiple Apps · One Space</small>
+      </div>
+      <button class="icon-btn top-more" id="topMoreBtn" aria-label="More">⋮</button>
+    </header>
+
+    <main id="screenHost" class="screen-host" aria-live="polite"></main>
+
+    <nav class="bottom-nav" aria-label="Main navigation">
+      <button class="nav-item active" data-page="home"><span class="nav-icon">⌂</span><span>Home</span></button>
+      <button class="nav-item" data-page="add"><span class="nav-icon">＋</span><span>Add App</span></button>
+      <button class="nav-item" data-page="clones"><span class="nav-icon">▣</span><span>My Clones</span></button>
+      <button class="nav-item" data-page="settings"><span class="nav-icon">⚙</span><span>Settings</span></button>
+    </nav>
+  </div>
+
+  <div class="modal-backdrop hidden" id="modalBackdrop">
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-handle"></div>
+      <div class="modal-head">
+        <h2 id="modalTitle">Dialog</h2>
+        <button class="icon-btn" id="modalClose" aria-label="Close">×</button>
+      </div>
+      <div id="modalBody"></div>
+      <div class="modal-actions" id="modalActions"></div>
+    </section>
+  </div>
+  <div class="toast" id="toast" role="status"></div>
+  <script src="js/app.js"></script>
+</body>
+</html>
