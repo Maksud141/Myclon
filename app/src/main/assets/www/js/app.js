@@ -25,6 +25,13 @@
   const appById = id => appCatalog.find(a => a.id === id) || {id:String(id||"unknown"),name:"Unknown App",package:String(id||""),glyph:"▣",category:"Installed",css:"installed"};
   const totalClones = () => state.clones.length;
   const appCloneCount = id => state.clones.filter(c => c.appId === id).length;
+  function saveClones() {
+    try {
+      localStorage.setItem("multiCloneEntries", JSON.stringify(state.clones));
+    } catch (e) {
+      showToast("Unable to save clone entries.");
+    }
+  }
   const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   const icon = app => `<div class="app-icon ${app.css}">${app.glyph}</div>`;
   const largeIcon = app => `<div class="app-icon large ${app.css}">${app.glyph}</div>`;
@@ -216,14 +223,14 @@
       const c=getClone(cloneId);if(!c)return;
       openModal("Rename Clone",`<label class="form-label" for="renameInput">Clone Name</label><input class="text-input" id="renameInput" maxlength="30" value="${esc(c.name)}">`,[
         {label:"Cancel",className:"secondary-btn",onClick:closeModal},
-        {label:"Save Name",className:"primary-btn",onClick:()=>{const v=$("#renameInput").value.trim();if(!v){showToast("Please enter a name.");return;}c.name=v;closeModal();render();showToast("Sample clone renamed.");}}
+        {label:"Save Name",className:"primary-btn",onClick:()=>{const v=$("#renameInput").value.trim();if(!v){showToast("Please enter a name.");return;}c.name=v;saveClones();closeModal();render();showToast("Clone entry renamed.");}}
       ]);
     }
     else if(action==="delete"){
       const c=getClone(cloneId);if(!c)return;
       openModal("Delete Clone?",`<p class="modal-text">Remove <strong>${esc(c.name)}</strong> from the sample list? This cannot be undone in this preview.</p>`,[
         {label:"Cancel",className:"secondary-btn",onClick:closeModal},
-        {label:"Delete",className:"danger-btn",onClick:()=>{state.clones=state.clones.filter(x=>x.id!==c.id);closeModal();state.page="clones";render();showToast("Sample clone deleted.");}}
+        {label:"Delete",className:"danger-btn",onClick:()=>{state.clones=state.clones.filter(x=>x.id!==c.id);saveClones();closeModal();state.page="clones";render();showToast("Clone entry deleted.");}}
       ]);
     }
     else if(action==="change-icon"){
@@ -258,7 +265,11 @@
         const id=state.clones.length?Math.max(...state.clones.map(c=>c.id))+1:1;
         state.clones.push({id,appId:app.id,name:count===1?baseName:`${baseName} ${i+1}`,status:"Active",created:"Just now"});
       }
-      state.page="clones";state.category="All";render();showToast(`${count} sample clone${count===1?"":"s"} added.`);
+      saveClones();
+      state.page="clones";
+      state.category="All";
+      render();
+      showToast(`${count} clone entr${count===1?"y":"ies"} added.`);
     }
     else if(action==="toggle-theme"){
       state.settings.lightTheme=!state.settings.lightTheme;
@@ -272,7 +283,7 @@
       openModal("Multi Select","<p class='modal-text'>This is a planned manager feature. Bulk selection will be implemented after the design is approved.</p>",[{label:"Got it",className:"primary-btn",onClick:closeModal}]);
     }
     else if(action==="sort"){
-      state.clones.sort((a,b)=>a.name.localeCompare(b.name));render();showToast("Sample clones sorted by name.");
+      state.clones.sort((a,b)=>a.name.localeCompare(b.name));saveClones();render();showToast("Clones sorted by name.");
     }
   }
 
