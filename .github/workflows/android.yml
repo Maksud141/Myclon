@@ -1,13 +1,18 @@
+
 name: Build Multi Clone App APK
 
 on:
   workflow_dispatch:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
+
+permissions:
+  contents: read
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -16,23 +21,30 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: "17"
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Build debug APK
+      - name: Accept Android SDK licenses
+        run: yes | sdkmanager --licenses || true
+
+      - name: Check Gradle wrapper
         run: |
-          chmod +x gradlew || true
-          if [ -f ./gradlew ]; then
-            ./gradlew assembleDebug
-          else
-            echo "Gradle wrapper missing. Add gradlew + gradle/wrapper files, or generate wrapper locally."
+          if [ ! -f ./gradlew ]; then
+            echo "ERROR: Gradle Wrapper is missing."
+            echo "Add gradlew and gradle/wrapper files to the repository."
             exit 1
           fi
+          chmod +x ./gradlew
+
+      - name: Build debug APK
+        run: ./gradlew assembleDebug
 
       - name: Upload APK
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: MultiCloneApp-debug-apk
           path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
